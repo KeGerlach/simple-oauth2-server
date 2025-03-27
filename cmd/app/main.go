@@ -7,24 +7,24 @@ import (
 	"os"
 	"os/signal"
 	router "simple-oauth2-server/internal/api"
+	"simple-oauth2-server/internal/environment"
 	"syscall"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	
-	if port == "" {
-		port = "8080"
+	if err := environment.Init(); err != nil {
+		fmt.Printf("Failed to initialize environment: %s\n", err)
+		return 
 	}
 
 	r, err := router.New()
 	if err != nil {
-		fmt.Printf("Failed to create router. Error: %s", err)
+		fmt.Printf("Failed to create router. Error: %s\n", err)
 		return
 	}
 
 	server := &http.Server{
-		Addr: fmt.Sprintf(":%s", port),
+		Addr: fmt.Sprintf(":%s", environment.Get().PORT),
 		Handler: r,
 	}
 
