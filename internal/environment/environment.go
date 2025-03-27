@@ -1,33 +1,43 @@
 package environment
 
 import (
+	"crypto/rsa"
+	"encoding/pem"
 	"fmt"
 	"os"
 	"reflect"
+	"strconv"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
 )
 
 type Environment struct {
-	PORT					string
-
-	SECRET_KEY 				string
 	CLIENT_ID				string
 	CLIENT_SECRET			string
 
-	TOKEN_EXPIRATION_TIME 	string
+	PORT					int
+
+	SECRET 					*rsa.PrivateKey
+
+	TOKEN_EXPIRATION_TIME 	int
 }
 
 var instance *Environment = nil
 
 func Get() *Environment {
 	if instance == nil {
+		port, _ := strconv.Atoi(os.Getenv("PORT"))
+		tokenExpirationTime, _ := strconv.Atoi(os.Getenv("TOKEN_EXPIRATION_TIME"))
+
+		secret, _ := loadPrivateKey(os.Getenv("PRIVATE_KEY_PATH"))
+
 		instance = &Environment{
-			PORT:					os.Getenv("PORT"),
-			SECRET_KEY: 			os.Getenv("SECRET_KEY"),
+			PORT:					port,
+			SECRET: 				secret,
 			CLIENT_ID: 				os.Getenv("CLIENT_ID"),
 			CLIENT_SECRET: 			os.Getenv("CLIENT_SECRET"),
-			TOKEN_EXPIRATION_TIME: 	os.Getenv("TOKEN_EXPIRATION_TIME"),
+			TOKEN_EXPIRATION_TIME: 	tokenExpirationTime,
 		}
 	}
 
@@ -48,9 +58,18 @@ func Init() error {
 
 	var missing []string
 
+	// validate if all env vars are being set
 	for i := range v.NumField() {
-		if v.Field(i).Interface().(string) == "" {
-			missing = append(missing, typeOfs.Field(i).Name)
+		field := v.Field(i)
+		name := typeOfs.Field(i).Name
+
+		switch field.Kind() {
+		case reflect.String:
+			ValidateString(field.String(), name, &missing)
+		case reflect.Int:
+			ValidateInt(int(field.Int()), name, &missing)
+		case reflect.Ptr:
+			ValidatePtr(field, name, &missing)
 		}
 	}
 
@@ -59,4 +78,41 @@ func Init() error {
 	}
 
 	return nil
+}
+
+func loadPrivateKey(path string) (*rsa.PrivateKey, error) {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read private key: %w", err)
+	}
+
+	block, _ := pem.Decode(bytes)
+	if block == nil {
+		return nil, fmt.Errorf("no PEM data found")
+	}
+
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(bytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse private key: %w", err)
+	}
+
+	return key, nil
+}
+
+func ValidateString(val string, name string, missing *[]string) {
+	if val == "" {
+		*missing = append(*missing, name)
+	}
+}
+
+func ValidateInt(val int, name string, missing *[]string) {
+	if val == 0 {
+		*missing = append(*missing, name)
+	}
+}
+
+func ValidatePtr(val reflect.Value, name string, missing *[]string) {
+	if val.IsNil() {
+		*missing = append(*missing, name)
+	}
 }

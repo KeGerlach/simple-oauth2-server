@@ -24,7 +24,7 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr: fmt.Sprintf(":%s", environment.Get().PORT),
+		Addr: fmt.Sprintf(":%v", environment.Get().PORT),
 		Handler: r,
 	}
 
