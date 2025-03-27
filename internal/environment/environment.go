@@ -9,11 +9,13 @@ import (
 )
 
 type Environment struct {
-	PORT			string
+	PORT					string
 
-	SECRET_KEY 		string
-	CLIENT_ID		string
-	CLIENT_SECRET	string
+	SECRET_KEY 				string
+	CLIENT_ID				string
+	CLIENT_SECRET			string
+
+	TOKEN_EXPIRATION_TIME 	string
 }
 
 var instance *Environment = nil
@@ -21,10 +23,11 @@ var instance *Environment = nil
 func Get() *Environment {
 	if instance == nil {
 		instance = &Environment{
-			PORT:			os.Getenv("PORT"),
-			SECRET_KEY: 	os.Getenv("SECRET_KEY"),
-			CLIENT_ID: 		os.Getenv("CLIENT_ID"),
-			CLIENT_SECRET: 	os.Getenv("CLIENT_SECRET"),
+			PORT:					os.Getenv("PORT"),
+			SECRET_KEY: 			os.Getenv("SECRET_KEY"),
+			CLIENT_ID: 				os.Getenv("CLIENT_ID"),
+			CLIENT_SECRET: 			os.Getenv("CLIENT_SECRET"),
+			TOKEN_EXPIRATION_TIME: 	os.Getenv("TOKEN_EXPIRATION_TIME"),
 		}
 	}
 

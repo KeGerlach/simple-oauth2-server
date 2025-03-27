@@ -1,7 +1,17 @@
 package jwt
 
-func Generate(clientID string) (string, error) {
+import (
+	"simple-oauth2-server/internal/environment"
+	"strconv"
+)
+
+func Generate(clientID string) (string, int, error) {
+	expiresIn, err := strconv.Atoi(environment.Get().TOKEN_EXPIRATION_TIME)
+	if err != nil {
+		expiresIn = 300
+	}
+	
 	token := "tmp"
 
-	return token, nil
+	return token, expiresIn, nil
 } 
