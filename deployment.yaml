@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-oauth2-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simple-oauth2-server
+  template:
+    metadata:
+      labels:
+        app: simple-oauth2-server
+    spec:
+      containers:
+        - name: simple-oauth2-server
+          image: my-docker-image:latest
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+          - name: CLIENT_ID
+            value: "simple"
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: client-secret
+                key: client-secret
+          - name: PRIVATE_KEY_PATH
+            value: "/app/private.pem"
+          - name: TOKEN_EXPIRATION_TIME
+            value: "300"
+          volumeMounts:
+          - name: private-key-volume
+            mountPath: /app/private.pem
+            subPath: private.pem
+      volumes:
+      - name: private-key-volume
+        secret:
+          secretName: private-key-secret
