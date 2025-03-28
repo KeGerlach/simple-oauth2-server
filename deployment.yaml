@@ -14,14 +14,14 @@ spec:
     spec:
       containers:
         - name: simple-oauth2-server
-          image: my-docker-image:latest
+          image: simple-oauth2-server_app:latest
           ports:
           - containerPort: 8080
           env:
           - name: PORT
             value: "8080"
           - name: CLIENT_ID
-            value: "simple"
+            value: "simple-oauth2-server"
           - name: CLIENT_SECRET
             valueFrom:
               secretKeyRef:
