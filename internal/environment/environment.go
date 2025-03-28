@@ -18,7 +18,8 @@ type Environment struct {
 
 	PORT					int
 
-	SECRET 					*rsa.PrivateKey
+	PRIVATE_KEY				*rsa.PrivateKey
+	PUBLIC_KEY				*rsa.PublicKey
 
 	TOKEN_EXPIRATION_TIME 	int
 }
@@ -34,7 +35,8 @@ func Get() *Environment {
 
 		instance = &Environment{
 			PORT:					port,
-			SECRET: 				secret,
+			PRIVATE_KEY: 			secret,
+			PUBLIC_KEY:				&secret.PublicKey,
 			CLIENT_ID: 				os.Getenv("CLIENT_ID"),
 			CLIENT_SECRET: 			os.Getenv("CLIENT_SECRET"),
 			TOKEN_EXPIRATION_TIME: 	tokenExpirationTime,

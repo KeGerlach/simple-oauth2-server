@@ -16,11 +16,6 @@ type Response struct{
 }
 
 func Post(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		http.Error(w, "No authorization header", http.StatusUnauthorized)

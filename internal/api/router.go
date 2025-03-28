@@ -2,6 +2,7 @@ package router
 
 import (
 	health "simple-oauth2-server/internal/api/health"
+	"simple-oauth2-server/internal/api/introspect"
 	"simple-oauth2-server/internal/api/jwks"
 	"simple-oauth2-server/internal/api/token"
 
@@ -17,6 +18,8 @@ func New() (*chi.Mux, error) {
 	r.Post("/token", token.Post)
 
 	r.Get("/jwks", jwks.Get)
+
+	r.Post("/introspect", introspect.Post)
 
 	return r, nil
 }

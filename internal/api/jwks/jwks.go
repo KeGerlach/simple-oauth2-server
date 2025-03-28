@@ -21,7 +21,7 @@ type Jwks struct {
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	publicKey := &environment.Get().SECRET.PublicKey
+	publicKey := environment.Get().PUBLIC_KEY
 
 	keys := Jwks {
 		Keys: []Jwk {
@@ -29,12 +29,12 @@ func Get(w http.ResponseWriter, r *http.Request) {
 				Kty:	"RSA",
 				N: 		base64.RawURLEncoding.EncodeToString(publicKey.N.Bytes()),
 				E:		base64.RawURLEncoding.EncodeToString(big.NewInt(int64(publicKey.E)).Bytes()),
-				Alg: 	"RSA256",
+				Alg: 	"RS256",
 				Use: 	"sig",
 			},
 		},
 	}
-
+	
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(keys)
 	if err != nil {
