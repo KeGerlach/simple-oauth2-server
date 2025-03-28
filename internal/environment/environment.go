@@ -50,7 +50,7 @@ func Init() error {
 	err := godotenv.Load()
 
 	if err != nil {
-		fmt.Println("Error loading .env file")
+		fmt.Println("No .env file was loaded. This is ok if the env vars are already provided by the Docker environment")
 	}
 
 	environment := Get()
