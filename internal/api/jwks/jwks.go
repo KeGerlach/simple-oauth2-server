@@ -14,6 +14,7 @@ type Jwk struct {
 	E		string	`json:"e"`
 	Alg		string	`json:"alg"`
 	Use		string	`json:"use"`
+	Kid		string 	`json:"kid"`
 }
 
 type Jwks struct {
