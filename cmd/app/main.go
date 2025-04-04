@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	router "simple-oauth2-server/internal/api"
 	"simple-oauth2-server/internal/environment"
+	"simple-oauth2-server/internal/keystore"
 	"syscall"
 )
 
@@ -17,7 +18,9 @@ func main() {
 		return 
 	}
 
-	r, err := router.New()
+	ks := keystore.New()
+
+	r, err := router.New(ks)
 	if err != nil {
 		fmt.Printf("Failed to create router. Error: %s\n", err)
 		return

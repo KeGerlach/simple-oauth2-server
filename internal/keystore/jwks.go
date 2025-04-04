@@ -1,4 +1,4 @@
-package jwks
+package keystore
 
 import (
 	"encoding/base64"
