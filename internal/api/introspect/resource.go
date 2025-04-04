@@ -1,4 +1,4 @@
-package jwks
+package introspect
 
 import "simple-oauth2-server/internal/keystore"
 

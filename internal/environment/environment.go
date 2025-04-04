@@ -24,29 +24,27 @@ type Environment struct {
 	TOKEN_EXPIRATION_TIME 	int
 }
 
-var instance *Environment = nil
+// var instance *Environment = nil
 
 func Get() *Environment {
-	if instance == nil {
-		port, _ := strconv.Atoi(os.Getenv("PORT"))
-		tokenExpirationTime, _ := strconv.Atoi(os.Getenv("TOKEN_EXPIRATION_TIME"))
+	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	tokenExpirationTime, _ := strconv.Atoi(os.Getenv("TOKEN_EXPIRATION_TIME"))
 
-		secret, _ := loadPrivateKey(os.Getenv("PRIVATE_KEY_PATH"))
+	secret, _ := loadPrivateKey(os.Getenv("PRIVATE_KEY_PATH"))
 
-		instance = &Environment{
-			PORT:					port,
-			PRIVATE_KEY: 			secret,
-			PUBLIC_KEY:				&secret.PublicKey,
-			CLIENT_ID: 				os.Getenv("CLIENT_ID"),
-			CLIENT_SECRET: 			os.Getenv("CLIENT_SECRET"),
-			TOKEN_EXPIRATION_TIME: 	tokenExpirationTime,
-		}
+	instance := &Environment{
+		PORT:					port,
+		PRIVATE_KEY: 			secret,
+		PUBLIC_KEY:				&secret.PublicKey,
+		CLIENT_ID: 				os.Getenv("CLIENT_ID"),
+		CLIENT_SECRET: 			os.Getenv("CLIENT_SECRET"),
+		TOKEN_EXPIRATION_TIME: 	tokenExpirationTime,
 	}
 
 	return instance
 }
 
-func Init() error {
+func Init() (*Environment, error) {
 	err := godotenv.Load()
 
 	if err != nil {
@@ -76,10 +74,10 @@ func Init() error {
 	}
 
 	if len(missing) > 0 {
-		return fmt.Errorf("missing env vars %v", missing)
+		return nil, fmt.Errorf("missing env vars %v", missing)
 	}
 
-	return nil
+	return environment, nil
 }
 
 func loadPrivateKey(path string) (*rsa.PrivateKey, error) {

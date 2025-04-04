@@ -3,7 +3,6 @@ package introspect
 import (
 	"encoding/json"
 	"net/http"
-	"simple-oauth2-server/internal/environment"
 	"strings"
 
 	"maps"
@@ -11,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func Post(w http.ResponseWriter, r *http.Request) {
+func (res *Resource) Post(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 			http.Error(w, "Authorization header is required", http.StatusBadRequest)
@@ -30,7 +29,11 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	response := map[string]any{}
 
 	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (any, error) {
-		return environment.Get().PUBLIC_KEY, nil
+		if keypair, err := res.ks.GetActiveKeyPair(); err == nil {
+			return keypair.PublicKey, nil
+		} else {
+			return nil, err
+		}
 	})
 	
 	if err != nil || !parsedToken.Valid {

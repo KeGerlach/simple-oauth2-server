@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func (resource *Resource) Get(w http.ResponseWriter, r *http.Request) {
-	jwks := resource.keystore.ToJwks()
+func (res *Resource) Get(w http.ResponseWriter, r *http.Request) {
+	jwks := res.ks.ToJwks()
 	
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(jwks)

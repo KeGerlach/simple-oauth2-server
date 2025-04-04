@@ -13,14 +13,19 @@ import (
 )
 
 func main() {
-	if err := environment.Init(); err != nil {
+	env, err := environment.Init()
+	if err != nil {
 		fmt.Printf("Failed to initialize environment: %s\n", err)
 		return 
 	}
 
-	ks := keystore.New()
+	ks, err := keystore.Init()
+	if err != nil {
+		fmt.Printf("Failed to initialize keystore: %s\n", err)
+		return 
+	}
 
-	r, err := router.New(ks)
+	r, err := router.New(env, ks)
 	if err != nil {
 		fmt.Printf("Failed to create router. Error: %s\n", err)
 		return

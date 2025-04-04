@@ -4,18 +4,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
-	"simple-oauth2-server/internal/environment"
 	"simple-oauth2-server/internal/jwt"
 	"strings"
 )
 
-type Response struct{
+type Response struct {
 	AccessToken	string 	`json:"access_token"`
 	TokenType	string 	`json:"token_type"`
 	ExpiresIn	int		`json:"expires_in"`
 }
 
-func Post(w http.ResponseWriter, r *http.Request) {
+func (res *Resource) Post(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		http.Error(w, "No authorization header", http.StatusUnauthorized)
@@ -41,12 +40,12 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 	clientId, clientSecret := credentials[0], credentials[1]
 
-	if clientId != environment.Get().CLIENT_ID || clientSecret != environment.Get().CLIENT_SECRET {
+	if clientId != res.env.CLIENT_ID || clientSecret != res.env.CLIENT_SECRET {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	token, expiresIn, err := jwt.Generate(clientId)
+	token, expiresIn, err := jwt.Generate(res.env, res.ks)
 	if err != nil {
 		http.Error(w, "Failed to generate token", http.StatusUnauthorized)
 		return
